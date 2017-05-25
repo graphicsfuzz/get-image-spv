@@ -244,8 +244,9 @@ private:
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
         drawFrame();
-        saveFrame();
         }
+        saveFrame();
+
 
         vkDeviceWaitIdle(device);
 
@@ -517,8 +518,8 @@ private:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("shaders/vert.spv");
-        auto fragShaderCode = readFile("shaders/frag.spv");
+        auto vertShaderCode = readFile("vert.spv");
+        auto fragShaderCode = readFile("frag.spv");
 
         VDeleter<VkShaderModule> vertShaderModule{device, vkDestroyShaderModule};
         VDeleter<VkShaderModule> fragShaderModule{device, vkDestroyShaderModule};
@@ -1003,28 +1004,38 @@ private:
         endSingleTimeCommands(commandBuffer);
     }
 
-    void bgra2rgb(uint32_t *bgra_image, uint8_t *rgba_image, int width, int height)
+    void bgra2rgb(uint32_t *bgra_image, uint32_t *rgba_image, int width, int height)
     {
     	uint32_t bgra, rgba;
     	uint8_t rr, gg, bb, aa;
 
 
 
-
-    	for(int i=0; i< height; i++)
+    	for(int h=0; h< height; h++)
     	{
-    		for(int  j=0; j< width; j++)
+    		for(int  col=0; col< width; col++)
     		{
-    			bgra = *(bgra_image + j * height + i);
-    			bb = (bgra & 0xff000000) >> 24;
-    			gg = (bgra & 0xff0000) >> 16;
-    			rr = (bgra & 0xff00) >> 8;
-    			aa = (bgra & 0xff);
+    			bgra = *(bgra_image + h * width + col);
+    			aa = (bgra & 0xff000000) >> 24;
+    			rr = (bgra & 0xff0000) >> 16;
+    			gg = (bgra & 0xff00) >> 8;
+    			bb = (bgra & 0xff);
 
-    			*(rgba_image + CHANNELS * (i * height + j) ) = rr;
-    			*(rgba_image + CHANNELS * (i * height + j) + 1 ) = gg;
-    			*(rgba_image + CHANNELS * (i * height + j) + 2 ) = bb;
-    			*(rgba_image + CHANNELS * (i * height + j) + 3 ) = aa;
+//    			bb = (bgra & 0xff000000) >> 24;
+//    			gg = (bgra & 0xff0000) >> 16;
+//    			rr = (bgra & 0xff00) >> 8;
+//    			aa = (bgra & 0xff);
+
+//    			rgba = (rr << 24) | (gg << 16) | (bb << 8) | aa;
+    			rgba = (aa << 24) | (bb << 16) | (gg << 8) | rr;
+
+    			*(rgba_image +  h * width + col) = rgba;
+
+//    			*(rgba_image + CHANNELS * h * width + col ) = rr;
+//    			*(rgba_image + CHANNELS * h * width + col + 1 ) = gg;
+//    			*(rgba_image + CHANNELS * h * width + col + 2 ) = bb;
+//    			*(rgba_image + CHANNELS * h * width + col + 3 ) = aa;
+
 
     		}
     	}
@@ -1109,18 +1120,20 @@ private:
     	}
 
 
-    	uint8_t *rgb_transformed = (uint8_t*) calloc(width * height * CHANNELS, sizeof(uint8_t));
+    	uint32_t *rgb_transformed = (uint32_t*) calloc(width * height * CHANNELS, sizeof(uint8_t));
     	bgra2rgb(pixels, rgb_transformed, width, height);
 
     	uint8_t *flipped_data = (uint8_t*) calloc(width * height * CHANNELS, sizeof(uint8_t));
+    	uint8_t *channel_ptr = (uint8_t*) rgb_transformed;
     	  for (int h = 0; h < height ; h++)
     	    for (int col = 0; col < width * CHANNELS; col++)
     	      flipped_data[h * width * CHANNELS + col] =
-    	    		  rgb_transformed[(height - h - 1) * width * CHANNELS + col];
+    	    		  channel_ptr[(height - h - 1) * width * CHANNELS + col];
 
 
-    	lodepng::encode("output1.png", rgb_transformed, width, height);
-    	lodepng::encode("output2.png", flipped_data, width, height);
+
+    	lodepng::encode("output_not_fliped.png", (uint8_t*) rgb_transformed, width, height);
+    	lodepng::encode("output.png", flipped_data, width, height);
 
 
     	vkUnmapMemory(device, stagingImageMemory);
@@ -1184,7 +1197,7 @@ private:
             int width, height;
             glfwGetWindowSize(window, &width, &height);
 
-            VkExtent2D actualExtent = {width, height};
+            VkExtent2D actualExtent = { (uint32_t) width, (uint32_t) height};
 
             actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
             actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));

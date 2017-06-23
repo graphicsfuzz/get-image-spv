@@ -1183,10 +1183,13 @@ private:
      	    	delete[] ubo;
     	     } else if (uniformFunc == "glUniform2fv") {
     	    	 // TODO: Discuss with Hugues how this actually looks in the JSON file
+    	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
     	     } else if (uniformFunc == "glUniform3fv") {
     	    	 // TODO: Same
+    	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
     	     } else if (uniformFunc == "glUniform4fv") {
     	    	 // TODO: Same
+    	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
     	     }
 
     	    // arrays of floats, vec2, vec3
@@ -1205,10 +1208,13 @@ private:
      	    	delete[] ubo;
     	     } else if (uniformFunc == "glUniform2fv") {
     	    	 // TODO: Discuss with Hugues how this actually looks in the JSON file
+    	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
     	     } else if (uniformFunc == "glUniform3fv") {
     	    	 // TODO: Same
+    	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
     	     } else if (uniformFunc == "glUniform4fv") {
     	    	 // TODO: Same
+    	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
     	     }
     	}
 

@@ -33,13 +33,19 @@ def compile_code():
     check_output(s_out, s_err)
         
         
-def compile_shaders(vertex_file, fragment_file):
+def compile_shaders(vertex_file, fragment_file, json_file):
     """
     Compile the fragment shader
     """
     s_out,s_err = system_call(VULKAN_SDK_PATH + "bin/glslangValidator " + "-V " + vertex_file )
     check_output(s_out, s_err)
+    s_out,s_err = system_call( "mv vert.spv shaders/ " )
+    check_output(s_out, s_err)
     s_out,s_err = system_call(VULKAN_SDK_PATH + "bin/glslangValidator " + "-G " + fragment_file )
+    check_output(s_out, s_err)
+    s_out,s_err = system_call( "mv frag.spv shaders/ " )
+    check_output(s_out, s_err)
+    s_out,s_err = system_call( "mv " + json_file  + " shaders/frag.json " )
     check_output(s_out, s_err)
     
     
@@ -54,10 +60,10 @@ def run_get_image():
     
 if __name__ == "__main__":
     
-    if len(sys.argv) != 2:
-        print "USAGE: " + sys.argv[0] + " fragment_shader.frag"
+    if len(sys.argv) != 3:
+        print "USAGE: " + sys.argv[0] + " <fragment_shader.frag> " + "<fragment_shader.json>"
         exit(1)
         
     compile_code()
-    compile_shaders(VERTEX_SHADER, sys.argv[1])
+    compile_shaders(VERTEX_SHADER, sys.argv[1], sys.argv[2])
     run_get_image()

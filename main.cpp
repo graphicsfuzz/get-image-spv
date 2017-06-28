@@ -16,14 +16,14 @@
 #include <set>
 
 #include <stdlib.h>     /* atoi */
+#include "common.h"
 #include "lodepng.h"
 #include "json.hpp"
 using json = nlohmann::json;
 
-const int WIDTH = 256;
-const int HEIGHT = 256;
-#define CHANNELS (4)
 
+Params params;
+#define CHANNELS (4)
 
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_LUNARG_standard_validation"
@@ -163,11 +163,11 @@ const std::vector<uint16_t> indices = {
     0, 1, 2, 2, 3, 0
 };
 
-class HelloTriangleApplication {
+class VulkanApplication {
 public:
     void run() {
         initWindow();
-        readUniforms("shaders/frag.json");
+        readUniforms(params.jsonFilename);
         initVulkan();
         mainLoop();
         cleanup();
@@ -205,11 +205,6 @@ private:
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
 
-//    VkBuffer uniformBuffer0;
-//    VkDeviceMemory uniformBufferMemory0;
-//
-//    VkBuffer uniformBuffer1;
-//    VkDeviceMemory uniformBufferMemory1;
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBufferMemorys;
 
@@ -228,10 +223,10 @@ private:
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-        window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+        window = glfwCreateWindow(params.width, params.height, "Vulkan", nullptr, nullptr);
 
         glfwSetWindowUserPointer(window, this);
-        glfwSetWindowSizeCallback(window, HelloTriangleApplication::onWindowResized);
+        glfwSetWindowSizeCallback(window, VulkanApplication::onWindowResized);
     }
 
     void readUniforms(const std::string& jsonFilename) {
@@ -290,12 +285,12 @@ private:
     }
 
     void mainLoop() {
+
+        updateUniformBuffer();		// for uniforms
+        drawFrame();
+        saveFrame();				// creates the PNG file
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
-
-            updateUniformBuffer();		// for uniforms
-            drawFrame();
-            saveFrame();				// creates the PNG file
         }
 
         vkDeviceWaitIdle(device);
@@ -355,7 +350,7 @@ private:
     static void onWindowResized(GLFWwindow* window, int width, int height) {
         if (width == 0 || height == 0) return;
         
-        HelloTriangleApplication* app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+        VulkanApplication* app = reinterpret_cast<VulkanApplication*>(glfwGetWindowUserPointer(window));
         app->recreateSwapChain();
     }
 
@@ -610,7 +605,6 @@ private:
     }
 
 
-
     void createDescriptorSetLayout() {
 
     	std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings;
@@ -623,10 +617,6 @@ private:
 												uniformInfoVec[i].binding));
     	}
 
-//		{
-//			descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
-//			descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
-//		};
 
 
         VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -641,8 +631,8 @@ private:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("shaders/vert.spv");
-        auto fragShaderCode = readFile("shaders/frag.spv");
+        auto vertShaderCode = readFile(params.vertFilename);
+        auto fragShaderCode = readFile(params.fragFilename);
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -847,10 +837,6 @@ private:
     		createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBufferMemorys[i]);
 
     	}
-//        VkDeviceSize bufferSize0 = sizeof(UniformBufferObject0);
-//        createBuffer(bufferSize0, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffer0, uniformBufferMemory0);
-//        VkDeviceSize bufferSize1 = 2 * sizeof(glm::vec4);
-//        createBuffer(bufferSize1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffer1, uniformBufferMemory1);
 
     }
 
@@ -897,23 +883,6 @@ private:
         			writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, uniformInfoVec[i].binding, &bufferInfos[i])
 			);
         }
-
-//        VkDescriptorBufferInfo bufferInfo0 = {};
-//        bufferInfo0.buffer = uniformBuffer0;
-//        bufferInfo0.offset = 0;
-//        bufferInfo0.range = sizeof(UniformBufferObject0);
-//
-//        writeDescriptorSets.push_back(
-//        		writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &bufferInfo0)
-//        );
-//
-//        VkDescriptorBufferInfo bufferInfo1 = {};
-//        bufferInfo1.buffer = uniformBuffer1;
-//        bufferInfo1.offset = 0;
-//        bufferInfo1.range = 2 * sizeof(glm::vec4);
-//        writeDescriptorSets.push_back(
-//        		writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, &bufferInfo1)
-//        );
 
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
@@ -1218,28 +1187,6 @@ private:
     	     }
     	}
 
-
-
-//    	void* data0;
-//    	UniformBufferObject0 ubo0 = {};
-//    	ubo0.r = 0;
-//    	vkMapMemory(device, uniformBufferMemory0, 0, sizeof(ubo0), 0, &data0);
-//    		memcpy(data0, &ubo0, sizeof(ubo0));
-//    	vkUnmapMemory(device, uniformBufferMemory0);
-//
-//
-//    	void* data1;
-//        UniformBufferObject1 ubo1 = {};
-//        ubo1.c = new glm::vec4[2];
-//        ubo1.c[0] = glm::vec4(0.4, 0.0, 0.0, 0.0);
-//        ubo1.c[1] = glm::vec4(0.4, 0.0, 0.0, 0.0);
-//
-//
-//        vkMapMemory(device, uniformBufferMemory1, 0, 2 * sizeof(glm::vec4), 0, &data1);
-//            memcpy(data1, ubo1.c, 2 * sizeof(glm::vec4));
-//        vkUnmapMemory(device, uniformBufferMemory1);
-
-
     }
 
     void drawFrame() {
@@ -1523,20 +1470,26 @@ private:
          uint32_t *rgb_transformed = (uint32_t*) calloc(width * height * CHANNELS, sizeof(uint8_t));
          bgra2rgb(pixels, rgb_transformed, width, height);
 
-         uint8_t *flipped_data = (uint8_t*) calloc(width * height * CHANNELS, sizeof(uint8_t));
-         uint8_t *channel_ptr = (uint8_t*) rgb_transformed;
-         for (int h = 0; h < height ; h++)
-        	 for (int col = 0; col < width * CHANNELS; col++)
-        		 flipped_data[h * width * CHANNELS + col] =
-        				 channel_ptr[(height - h - 1) * width * CHANNELS + col];
+         if (params.flipped) {
 
-         lodepng::encode("output_not_fliped.png", (uint8_t*) rgb_transformed, width, height);
-         lodepng::encode("output.png", flipped_data, width, height);
+        	 uint8_t *flipped_data = (uint8_t*) calloc(width * height * CHANNELS, sizeof(uint8_t));
+        	 uint8_t *channel_ptr = (uint8_t*) rgb_transformed;
+        	 for (int h = 0; h < height ; h++)
+        		 for (int col = 0; col < width * CHANNELS; col++)
+        			 flipped_data[h * width * CHANNELS + col] =
+        					 channel_ptr[(height - h - 1) * width * CHANNELS + col];
+
+        	 lodepng::encode(params.output, flipped_data, width, height);
+        	 free(flipped_data);
+         } else {
+        	 lodepng::encode(params.output, (uint8_t*) rgb_transformed, width, height);
+         }
+
 
          vkUnmapMemory(device, stagingImageMemory);
          free(pixels);
          free(rgb_transformed);
-         free(flipped_data);
+
 
          vkDestroyImage(device, stagingImage, nullptr);
          vkFreeMemory(device, stagingImageMemory, nullptr);
@@ -1762,8 +1715,15 @@ private:
     }
 };
 
-int main() {
-    HelloTriangleApplication app;
+
+
+
+int main(int argc, char* argv[]) {
+    VulkanApplication app;
+
+
+    setParams(params, argc, argv);
+
 
     try {
         app.run();

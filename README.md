@@ -24,3 +24,9 @@ sudo apt-get install libglfw3-dev libglm-dev mesa-vulkan-drivers
 
 ## Run
 To run it should be sufficient to just run the **run_get_image.py** script
+
+To run get-image-spv "by hand", you a command similar to:
+
+```
+LD_LIBRARY_PATH=${VULKAN_SDK_PATH}/lib VK_LAYER_PATH=${VULKAN_SDK_PATH}/etc/explicit_layer.d ./get-image-spv
+```

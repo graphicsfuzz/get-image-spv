@@ -35,7 +35,7 @@ typedef struct {
 #define crash(fmt, ...) do {                           \
         printf("%s:%d (%s) ERROR: ", __FILE__, __LINE__, __func__);     \
         printf(fmt, ##__VA_ARGS__);                                     \
-        printf("\n");                                                   \
+        printf("\n\n");                                                   \
         exit (EXIT_FAILURE);                                            \
     } while (0)
 
@@ -44,24 +44,24 @@ typedef struct {
 
 
 static void usage(char *name) {
-    std::cout << "Usage: " << name << " [options] <shader>.frag" << std::endl;
+    std::cout << std::endl << "Usage: " << name << " [options] <shader>.spv" << std::endl;
     std::cout << std::endl;
 
     const char *msg =
-        "The program will search by default for the frag.spv frag.json\n"
-        "and vert.spvin in the shaders folders. This commands can be  \n"
-        "overriten by the using the options\n"
-        ;
+    		"The program will look for a JSON whose name is derived from the\n"
+    		"shader as '<shader>.json'. This JSON file can contain uniforms\n"
+    		"initialisations.\n"
+            ;
     std::cout << msg;
     std::cout << std::endl;
 
     std::cout << "Options:" << std::endl;
 
     const char *options[] = {
-        "--output file.png", "set PNG output file name",
-        "--resolution <width> <height>", "set resolution, in Pixels",
-        "--vertex vert.spv", "use a specific vertex shader",
-		"--fragment frag.spv", "use a specific fragment shader",
+        "--output       <file>.png", "set PNG output file name",
+        "--resolution   <width> <height>", "set resolution, in Pixels",
+        "--vertex       <file>.spv", "use a specific vertex shader",
+		"--fragment     <file>.spv", "use a specific fragment shader",
 		"--not_flipped", "do not flip the image",
     };
 
@@ -78,9 +78,9 @@ static void usage(char *name) {
 static void defaultParams(Params& params) {
     params.width = 256;
     params.height = 256;
-    params.fragFilename = "shaders/frag.spv";
+    params.fragFilename = "";
     params.vertFilename = "shaders/vert.spv";
-    params.jsonFilename = "shaders/frag.json";
+    params.jsonFilename = "";
     params.output = "output.png";
     params.flipped = "true";
 }
@@ -117,12 +117,26 @@ static void setParams(Params& params, int argc, char *argv[]) {
             }
             continue;
         }
+        if (params.fragFilename == "") {
+            params.fragFilename = arg;
+        } else {
+            usage(argv[0]);
+            crash("Unexpected extra argument: %s", arg.c_str());
+        }
     }
 
     if (params.fragFilename == "") {
         usage(argv[0]);
         crash("Missing fragment shader argument");
     }
+
+    if (params.jsonFilename == "") {
+    	params.jsonFilename = params.fragFilename;
+    	params.jsonFilename.replace(params.jsonFilename.end()-3, params.jsonFilename.end(), "json");
+    	std::cout << "The JSON file that will be used is " << params.jsonFilename << std::endl;
+    }
+
+
 }
 
 

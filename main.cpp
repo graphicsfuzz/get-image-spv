@@ -1370,20 +1370,10 @@ private:
      			gg = (bgra & 0xff00) >> 8;
      			bb = (bgra & 0xff);
 
- //    			bb = (bgra & 0xff000000) >> 24;
- //    			gg = (bgra & 0xff0000) >> 16;
- //    			rr = (bgra & 0xff00) >> 8;
- //    			aa = (bgra & 0xff);
-
- //    			rgba = (rr << 24) | (gg << 16) | (bb << 8) | aa;
      			rgba = (aa << 24) | (bb << 16) | (gg << 8) | rr;
 
      			*(rgba_image +  h * width + col) = rgba;
 
- //    			*(rgba_image + CHANNELS * h * width + col ) = rr;
- //    			*(rgba_image + CHANNELS * h * width + col + 1 ) = gg;
- //    			*(rgba_image + CHANNELS * h * width + col + 2 ) = bb;
- //    			*(rgba_image + CHANNELS * h * width + col + 3 ) = aa;
 
 
      		}

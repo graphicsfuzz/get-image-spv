@@ -1,0 +1,10 @@
+{
+  "resolution": {
+    "func": "glUniform2f",
+    "args": [
+      640.0,
+      480.0
+    ],
+    "binding": 0
+  }
+}

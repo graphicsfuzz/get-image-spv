@@ -1137,7 +1137,7 @@ private:
     	     }
 
     	    // arrays of int, ivec2, ivec3
-    	    else if (uniformFunc == "glUniform1fv") {
+    	    else if (uniformFunc == "glUniform1iv") {
 
     	    	void *data;
     	    	glm::ivec4* ubo;
@@ -1150,13 +1150,13 @@ private:
      	    		memcpy(data, ubo, uniformCount * sizeof(glm::ivec4));
      	    	vkUnmapMemory(device, uniformBufferMemorys[i]);
      	    	delete[] ubo;
-    	     } else if (uniformFunc == "glUniform2fv") {
+    	     } else if (uniformFunc == "glUniform2iv") {
     	    	 // TODO: Discuss with Hugues how this actually looks in the JSON file
     	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
-    	     } else if (uniformFunc == "glUniform3fv") {
+    	     } else if (uniformFunc == "glUniform3iv") {
     	    	 // TODO: Same
     	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
-    	     } else if (uniformFunc == "glUniform4fv") {
+    	     } else if (uniformFunc == "glUniform4iv") {
     	    	 // TODO: Same
     	    	 throw std::runtime_error("This type of uniform has not been implemented yet!");
     	     }

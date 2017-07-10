@@ -289,9 +289,9 @@ private:
         updateUniformBuffer();		// for uniforms
         drawFrame();
         saveFrame();				// creates the PNG file
-        while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
-        }
+//        while (!glfwWindowShouldClose(window)) {
+//            glfwPollEvents();
+//        }
 
         vkDeviceWaitIdle(device);
     }
@@ -1041,49 +1041,35 @@ private:
     	    // floats, vec2, vec3, vec4
     	    if (uniformFunc == "glUniform1f") {
     	    	void *data;
-    	    	float* ubo;
-    	    	ubo = new float;
-    	    	*ubo = uniformArgs[0];
+    	    	float ubo= uniformArgs[0];
+
     	    	vkMapMemory(device, uniformBufferMemorys[i], 0, sizeof(float), 0, &data);
-    	    		memcpy(data, ubo, sizeof(float));
+    	    		memcpy(data, &ubo, sizeof(float));
     	    	vkUnmapMemory(device, uniformBufferMemorys[i]);
-    	    	delete[] ubo;
 
     	     } else if (uniformFunc == "glUniform2f") {
     	    	void *data;
-     	    	float* ubo;
-     	    	ubo = new float[2];
-     	    	ubo[0] = uniformArgs[0];
-     	    	ubo[1] = uniformArgs[1];
-     	    	vkMapMemory(device, uniformBufferMemorys[i], 0, 2 * sizeof(float), 0, &data);
-     	    		memcpy(data, ubo, 2 * sizeof(float));
+     	    	glm::vec2 ubo = glm::vec2((float) uniformArgs[0],(float) uniformArgs[1]);;
+
+     	    	vkMapMemory(device, uniformBufferMemorys[i], 0, 2 * sizeof(glm::vec2), 0, &data);
+     	    		memcpy(data, &ubo, sizeof(glm::vec2));
      	    	vkUnmapMemory(device, uniformBufferMemorys[i]);
-     	    	delete[] ubo;
 
     	     } else if (uniformFunc == "glUniform3f") {
     	    	void *data;
-      	    	float* ubo;
-      	    	ubo = new float[3];
-      	    	ubo[0] = uniformArgs[0];
-      	    	ubo[1] = uniformArgs[1];
-      	    	ubo[2] = uniformArgs[2];
-      	    	vkMapMemory(device, uniformBufferMemorys[i], 0, 3 * sizeof(float), 0, &data);
-      	    		memcpy(data, ubo, 3 * sizeof(float));
+      	    	glm::vec3 ubo = glm::vec3((float) uniformArgs[0],(float) uniformArgs[1],(float) uniformArgs[2]);;
+
+      	    	vkMapMemory(device, uniformBufferMemorys[i], 0, sizeof(glm::vec3), 0, &data);
+      	    		memcpy(data, &ubo, sizeof(glm::vec3));
       	    	vkUnmapMemory(device, uniformBufferMemorys[i]);
-      	    	delete[] ubo;
 
     	     } else if (uniformFunc == "glUniform4f") {
     	    	void *data;
-       	    	float* ubo;
-       	    	ubo = new float[4];
-       	    	ubo[0] = uniformArgs[0];
-       	    	ubo[1] = uniformArgs[1];
-       	    	ubo[2] = uniformArgs[2];
-       	    	ubo[3] = uniformArgs[3];
-       	    	vkMapMemory(device, uniformBufferMemorys[i], 0, 4 * sizeof(float), 0, &data);
-       	    		memcpy(data, ubo, 4 * sizeof(float));
+    	    	glm::vec4 ubo = glm::vec4((float) uniformArgs[0],(float) uniformArgs[1],(float) uniformArgs[2],(float) uniformArgs[3]);
+
+       	    	vkMapMemory(device, uniformBufferMemorys[i], 0, sizeof(glm::vec4), 0, &data);
+       	    		memcpy(data, &ubo, sizeof(glm::vec4));
        	    	vkUnmapMemory(device, uniformBufferMemorys[i]);
-       	    	delete[] ubo;
 
     	     }
 
@@ -1684,7 +1670,8 @@ private:
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
         if (!file.is_open()) {
-            throw std::runtime_error("failed to open file!");
+        	std::cout<<"Tried to open file"<<filename<<std::endl;
+            throw std::runtime_error("failed to open file! ");
         }
 
         size_t fileSize = (size_t) file.tellg();

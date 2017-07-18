@@ -1,33 +1,36 @@
 cmake_minimum_required(VERSION 2.8)
-set(VULKAN_SDK_PATH /home/dan/VulkanSDK/1.0.46.0/x86_64)
+
+if(WIN32)
+	set(VULKAN_SDK_PATH D:/VulkanSDK/1.0.51.0)
+	set(GLM_PATH D:/glm )
+	set(GLFW3_PATH D:/glfw-3.2.1.bin.WIN64 )
+else()
+	set(VULKAN_SDK_PATH /home/dan/VulkanSDK/1.0.46.0/x86_64)
+	set(GLM_PATH "")
+	set(GLFW3_PATH "" )
+endif()
+
 
 project(get-image-spv)
-# -- Build dependencies -- #
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/deps)
-execute_process(
-COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_SOURCE_DIR}/deps -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/deps
-)
-execute_process(
-COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE}
-WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/deps
-)
-execute_process(
-COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TYPE=${CMAKE_BUILD_TYPE} -P cmake_install.cmake
-WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/deps
-)
-# -- End build dependencies -- #
 
+if (UNIX)
+	find_package(glfw3 REQUIRED)
+	find_package(glm REQUIRED)
+endif (UNIX)
 
-find_package(glfw3 REQUIRED)
-find_package(glm REQUIRED)
-
-link_directories(${VULKAN_SDK_PATH}/lib)
+link_directories(${VULKAN_SDK_PATH}/lib ${GLFW3_PATH}/lib-vc2015 )
 
 add_executable(get_image_spv main.cpp lodepng.cpp)
-target_link_libraries(get_image_spv  glfw vulkan)
+
+if(WIN32)
+    target_link_libraries(get_image_spv glfw3 vulkan-1)
+else()
+    target_link_libraries(get_image_spv glfw vulkan)
+endif()
+
+
 target_compile_definitions(get_image_spv PUBLIC -DNDEBUG)
-target_include_directories(get_image_spv PUBLIC ${VULKAN_SDK_PATH}/include)
+target_include_directories(get_image_spv PUBLIC ${VULKAN_SDK_PATH}/include ${GLFW3_PATH}/include ${GLM_PATH} )
 
 install(TARGETS get_image_spv
     DESTINATION bin

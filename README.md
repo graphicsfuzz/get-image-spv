@@ -8,19 +8,46 @@ Get image for Vulkan
 
    Build the tools with the `build_tools.sh` script provided. To test if Vulkan is able to run on your graphics card, you can also run the `build_examples.sh` script and then try to run the **cube** example found in examples/build
 
+   
 2. Install dependencies (NOTE: please update the README if need be!):
    * GLFW3
    * GLM
    * the platform vulkan drivers
+   * [For Windows] Visual Studio
 
 On Debian / Ubuntu:
 
    ```
 	sudo apt-get install libglfw3-dev libglm-dev mesa-vulkan-drivers
    ```
+   
+On Windows
+   * For GLFW3 go [here](http://www.glfw.org/download.html "GLFW3") and download and extract binaries. I used the 64-bit ones 
+   * For GLM go [here](http://glm.g-truc.net/0.9.8/index.html "GLM") and download and extract. You do not need to compile.
+	
 
-3. Change Vulkan SDK path in the Makefile and the python script
+3. Open CMakeLists and change VULKAN_SDK_PATH, GLM_PATH and GLFW3_PATH accordingly. If you installed using apt-get on Ubuntu, it will only care about the Vulkan path.
 
+4. Compile
+
+On Debian / Ubuntu:
+
+   ```
+	mkdir build
+	cd build
+	cmake ..
+	make
+   ```
+   
+On Windows:
+	Open a developer prompt for Visual Studio:
+	
+   ```
+	mkdir build
+	cd build
+	cmake -G "Visual Studio 15 2017 Win64" --config Release
+	msbuild get_image_spv.vcxproj  /p:Configuration=Release /m
+   ```
 
 ## Vulkanzie shaders
 
@@ -31,7 +58,6 @@ On Debian / Ubuntu:
 
 ## Run
 1. Option 1.
-   * make
    * Use glslangvalidator from you Vulkan SDK instalation to compile your "vulkanized" shaders to spv format.
    ```
    /path/to/Vulkan/x86_64/bin/glslvalidator -V <recipient.vk>.frag -o <recipient.vk>.spv
@@ -51,6 +77,6 @@ On Debian / Ubuntu:
 	./run_get_image.py <shader_file>.frag <json_file>.json
     ```
 
-##Flipped Image
+## Flipped Image
 
 In the OpenGl get_image programs I have noticed that the image is flipped at the end. I have made the same think for Vulkan but I have also added a command line option to not flip the image if so desired.

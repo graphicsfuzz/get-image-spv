@@ -44,7 +44,7 @@ typedef struct {
 
 
 static void usage(char *name) {
-    std::cout << std::endl << "Usage: " << name << " [options] <shader>.spv" << std::endl;
+    std::cout << std::endl << "Usage: " << name << " [options] <vertex>.spv <fragment>.spv" << std::endl;
     std::cout << std::endl;
 
     const char *msg =
@@ -79,7 +79,7 @@ static void defaultParams(Params& params) {
     params.width = 256;
     params.height = 256;
     params.fragFilename = "";
-    params.vertFilename = "shaders/vert.spv";
+    params.vertFilename = "";
     params.jsonFilename = "";
     params.output = "output.png";
     params.flipped = "true";
@@ -117,8 +117,10 @@ static void setParams(Params& params, int argc, char *argv[]) {
             }
             continue;
         }
-        if (params.fragFilename == "") {
-            params.fragFilename = arg;
+        if (params.vertFilename == "") {
+            params.vertFilename = arg;
+        } else if (params.fragFilename == "") {
+        	params.fragFilename = arg;
         } else {
             usage(argv[0]);
             crash("Unexpected extra argument: %s", arg.c_str());

@@ -135,6 +135,7 @@ static void setParams(Params& params, int argc, char *argv[]) {
     	params.jsonFilename.replace(params.jsonFilename.end()-3, params.jsonFilename.end(), "json");
     	std::cout << "The JSON file that will be used is " << params.jsonFilename << std::endl;
     }
+    std::cout << "The FRAG file that will be used is " << params.fragFilename << std::endl;
 
 
 }

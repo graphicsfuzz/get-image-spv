@@ -74,7 +74,7 @@ On Windows:
    ```
    * Run `get_image_spv` with the shader argument
    ```
-	./get_image_spv <shader_file>.spv
+	./get_image_spv <vertex_file>.spv <shader_file>.spv
     ```
 
 

@@ -6,10 +6,12 @@ Get image for Vulkan
 
 1. Download and install [Lunar Vulkan SDK](https://vulkan.lunarg.com/ "Lunar Vulkan SDK").
 
-On Debian / Ubuntu
+On Debian / Ubuntu:
+
    Build the tools with the `build_tools.sh` script provided. To test if Vulkan is able to run on your graphics card, you can also run the `build_examples.sh` script and then try to run the **cube** example found in examples/build
 
 On Windows:
+
    Everything should work out of the box. Run the **cube** example from the bin folder to test if your graphic card is Vulkan capable.
 
    

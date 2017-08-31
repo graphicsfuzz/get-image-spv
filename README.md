@@ -60,7 +60,7 @@ On Windows:
    ```
 ## Demo
    To test if it is working corectly, try the following command:
-   
+
    ```
    # From the top folder
    .\build\Release\get_image_spv.exe shaders\vert.spv shaders\recipient.vk.spv
@@ -100,4 +100,4 @@ On Windows:
 
 ## Flipped Image
 
-In the OpenGl get_image programs I have noticed that the image is flipped at the end. I have made the same think for Vulkan but I have also added a command line option to not flip the image if so desired.
+In the OpenGl get_image programs I have noticed that the image is flipped at the end. I have made the same thing for Vulkan but I have also added a command line option to not flip the image if so desired.

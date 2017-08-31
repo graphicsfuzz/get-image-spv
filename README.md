@@ -12,9 +12,12 @@ On Debian / Ubuntu:
 
 On Windows:
 
-   Everything should work out of the box. Run the **cube** example from the bin folder to test if your graphic card is Vulkan capable.
+   Everything should work out of the box. Run the **cube** example from
+   the bin folder to test if your graphic card is Vulkan capable. You
+   may have to update the graphics drivers, for instance latest intel
+   drivers are available at:
+   [https://downloadcenter.intel.com/product/80939/Graphics-Drivers](https://downloadcenter.intel.com/product/80939/Graphics-Drivers)
 
-   
 2. Install dependencies (NOTE: please update the README if need be!):
    * GLFW3
    * GLM
@@ -26,11 +29,11 @@ On Debian / Ubuntu:
    ```
 	sudo apt-get install libglfw3-dev libglm-dev mesa-vulkan-drivers
    ```
-   
+
 On Windows
-   * For GLFW3 go [here](http://www.glfw.org/download.html "GLFW3") and download and extract binaries. I used the 64-bit ones 
+   * For GLFW3 go [here](http://www.glfw.org/download.html "GLFW3") and download and extract binaries. I used the 64-bit ones
    * For GLM go [here](http://glm.g-truc.net/0.9.8/index.html "GLM") and download and extract. You do not need to compile.
-	
+   * For the latest graphics drivers, search on the web. Intel ones are [here](https://downloadcenter.intel.com/product/80939/Graphics-Drivers).
 
 3. Open CMakeLists and change VULKAN_SDK_PATH, GLM_PATH and GLFW3_PATH accordingly. If you installed using apt-get on Ubuntu, it will only care about the Vulkan path.
 
@@ -44,23 +47,35 @@ On Debian / Ubuntu:
 	cmake ..
 	make
    ```
-   
+
 On Windows:
 	Open a developer prompt for Visual Studio:
-	
+
    ```
 	mkdir build
 	cd build
+    # Adapt the generator string, e.g. it can be "Visual Studio 15 Win64"
 	cmake -G "Visual Studio 15 2017 Win64" --config Release ..
 	msbuild get_image_spv.vcxproj  /p:Configuration=Release /m
    ```
+## Demo
+   To test if it is working corectly, try the following command:
+   
+   ```
+   # From the top folder
+   .\build\Release\get_image_spv.exe shaders\vert.spv shaders\recipient.vk.spv
+   ```
 
-## Vulkanzie shaders
+   Check resulting image in `output.png`.
 
-"Vulkanize" the shaders and the json from the GLSL dielect to the Vulkan dialect. For this you need
+## Vulkanize shaders
+
+"Vulkanize" the shaders and the json from the GLSL dialect to the Vulkan dialect. For this you need
    ```
    java -cp /path/to/OGLTesting/assembly/target/assembly-1.0/jar/tool-1.0.jar uk.ac.ic.doc.multicore.ogltesting.common.tool.Vulkanize <recipient>.frag <recipient.vk>
    ```
+
+
 
 ## Run
 1. Option 1.
@@ -68,7 +83,7 @@ On Windows:
    ```
    /path/to/Vulkan/x86_64/bin/glslvalidator -V <recipient.vk>.frag -o <recipient.vk>.spv
    ```
-   * Set an environmental variable to point to your Lunar Vulkan SDK libary path:
+   * Set an environmental variable to point to your Lunar Vulkan SDK libary path (not necessary on Windows):
    ```
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/Vulkan/x86_64/lib/
    ```

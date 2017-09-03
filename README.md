@@ -12,7 +12,7 @@ Get image for Vulkan
 2. Install dependencies (NOTE: please update the README if need be!):
    * GLFW3
    * GLM
-   * the platform vulkan drivers
+   * Vulkan-capable drivers for your platform
    * [For Windows] Visual Studio
 
 On Debian / Ubuntu:
@@ -26,7 +26,7 @@ On Windows
    * For GLM go [here](http://glm.g-truc.net/0.9.8/index.html "GLM") and download and extract. You do not need to compile.
 	
 
-3. Open CMakeLists and change VULKAN_SDK_PATH, GLM_PATH and GLFW3_PATH accordingly. If you installed using apt-get on Ubuntu, it will only care about the Vulkan path.
+3. Open CMakeLists and change VULKAN_SDK_PATH, GLM_PATH and GLFW3_PATH accordingly. If you installed using apt-get on Ubuntu, it will only care about the Vulkan path.  If you are using Windows, you should use / rather than \ in paths.
 
 4. Compile
 
@@ -45,7 +45,7 @@ On Windows:
    ```
 	mkdir build
 	cd build
-	cmake -G "Visual Studio 15 2017 Win64" --config Release
+	cmake -G "Visual Studio 15 2017 Win64" --config Release ..
 	msbuild get_image_spv.vcxproj  /p:Configuration=Release /m
    ```
 

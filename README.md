@@ -63,6 +63,11 @@ On Windows:
 
    ```
    # From the top folder
+
+   # On Linux
+   ./build/get_image_spv shaders/vert.spv shaders/recipient.vk.spv
+
+   # On Windows:
    .\build\Release\get_image_spv.exe shaders\vert.spv shaders\recipient.vk.spv
    ```
 

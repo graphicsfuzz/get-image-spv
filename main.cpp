@@ -169,6 +169,7 @@ public:
         initWindow();
         readUniforms(params.jsonFilename);
         initVulkan();
+        checkUniformLimit();
         mainLoop();
         cleanup();
     }
@@ -294,6 +295,20 @@ private:
 //        }
 
         vkDeviceWaitIdle(device);
+    }
+
+    void checkUniformLimit() {
+    	unsigned max_supported_uniforms;
+
+    	VkPhysicalDeviceProperties pProperties;
+    	vkGetPhysicalDeviceProperties(physicalDevice, &pProperties);
+    	max_supported_uniforms = pProperties.limits.maxPerStageDescriptorUniformBuffers;
+
+    	if (max_supported_uniforms < uniformInfoVec.size()) {
+    		std::cerr << "The physical device supports "<< max_supported_uniforms << " maximum but the JSON file has " << uniformInfoVec.size() <<" uniforms" << std::endl;
+    		exit(0);
+    	}
+
     }
 
     void cleanupSwapChain() {

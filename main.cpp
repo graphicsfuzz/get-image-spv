@@ -305,7 +305,7 @@ private:
     	max_supported_uniforms = pProperties.limits.maxPerStageDescriptorUniformBuffers;
 
     	if (max_supported_uniforms < uniformInfoVec.size()) {
-    		std::cerr << "The physical device supports "<< max_supported_uniforms << " maximum but the JSON file has " << uniformInfoVec.size() <<" uniforms" << std::endl;
+    		std::cerr << "The physical device supports "<< max_supported_uniforms << "uniforms maximum but the JSON file has " << uniformInfoVec.size() <<" uniforms" << std::endl;
     		exit(0);
     	}
 

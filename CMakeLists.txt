@@ -29,7 +29,7 @@ else()
 endif()
 
 
-target_compile_definitions(get_image_spv PUBLIC -DNDEBUG)
+target_compile_definitions(get_image_spv PUBLIC )
 target_include_directories(get_image_spv PUBLIC ${VULKAN_SDK_PATH}/include ${GLFW3_PATH}/include ${GLM_PATH} )
 
 install(TARGETS get_image_spv

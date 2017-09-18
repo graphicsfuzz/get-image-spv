@@ -302,6 +302,9 @@ private:
 
     	VkPhysicalDeviceProperties pProperties;
     	vkGetPhysicalDeviceProperties(physicalDevice, &pProperties);
+
+    	std::cout<<"Running on " << pProperties.deviceName << std::endl;
+
     	max_supported_uniforms = pProperties.limits.maxPerStageDescriptorUniformBuffers;
 
     	if (max_supported_uniforms < uniformInfoVec.size()) {

@@ -306,7 +306,7 @@ private:
 
     	if (max_supported_uniforms < uniformInfoVec.size()) {
     		std::cerr << "The physical device supports "<< max_supported_uniforms << "uniforms maximum but the JSON file has " << uniformInfoVec.size() <<" uniforms" << std::endl;
-    		exit(0);
+    		exit(1);
     	}
 
     }
